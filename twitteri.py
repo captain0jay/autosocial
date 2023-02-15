@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from pprint import pprint
+import io
 import json
 import urllib
 import requests
@@ -26,27 +27,44 @@ data = []
 image = []
 tweetids = set()
 time.sleep(10)
-#indx=0    
+indx=1
+sarc=[]
 
-    
+def download_image(url, file_name):
+    download_path = "imagis/"
+    image_content = requests.get(url).content
+    image_file = io.BytesIO(image_content)
+    image = Image.open(image_file)
+    file_path = download_path + file_name
+
+    with open(file_path, "wb") as file:
+        image.save(file, "JPEG")
+
+
 def gettweet():
     #url=f'https://twitter.com/{i}'
     #driver.get(url)
     time.sleep(5)
     articles = driver.find_elements(By.XPATH,"//article[@data-testid='tweet']")
+    imagee = driver.find_elements(By.XPATH,"//img[@alt='Image']")
+    for imag in imagee:
+        if imag not in sarc:
+            sarc.append(imag.get_attribute('src'))
+            cutc = imag.get_attribute('src')
+            cut = cutc[28:43]
+            download_image(cutc,cut + ".jpg")
     i=0
     print("data fetching....")
     for article in articles:
-        src = []
         #Tweet = article.find_element(By.XPATH,".//div[@data-testid='tweetText']").text
-        Tweet = article.find_element_by_xpath(".//div/div/div/div[2]/div[2]/div[2]/div[1]/div").text
-        imagee = article.find_element_by_xpath(".//div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img")
-        src.append(imagee.get_attribute('src'))
-        print(src[0])
-        tweet= (Tweet)
+        sweet = article.find_element_by_xpath(".//div/div/div/div[2]/div[2]/div[2]/div[1]/div")
+        Tweet=sweet.text
+        #imagee = article.find_element(by=By.XPATH,value="//div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img").get_attribute('src') or article.find_element(by=By.XPATH,value="//div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img").get_attribute('data-src')  #//img[@alt='Image'])
+        tweet= (Tweet)   
         tweetid = ''.join(tweet)
         if tweetid not in tweetids:
             data.append(tweet)
+            print(sarc)
             i=i+1
         
         driver.execute_script('window.scrollTo(0,1000)')
