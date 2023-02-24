@@ -52,13 +52,17 @@ class post(Document):
     meta = { "collection" : "post"}
     post_text = fields.StringField()
     post_img= fields.ImageField()
-
+    choice = fields.StringField()
+    file_name = fields.StringField()
+    #post_status = fields.StringField()
 
 #database incrementar ~
 def uploaddata(i_new,tweet_new):
     samvar = sarc[i_new]
     filennm = samvar[28:43]
-    post_pointer = post(post_text=tweet_new) 
+    post_pointer = post(post_text=tweet_new)
+    post_pointer.choice = "nposted"
+    post_pointer.file_name = filennm
     p_img = open("imagis/" + filennm + ".jpg",'rb')
     post_pointer.post_img.put(p_img,filename=filennm + ".jpg")
     post_pointer.save()
