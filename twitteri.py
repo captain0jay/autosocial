@@ -31,7 +31,9 @@ image = []
 tweetids = set()
 time.sleep(10)
 sarc=[]
+fl=[]
 cmparr= set()
+lnkcomparr = set()
 #if not made global it gives assignment error ~
 i=0
 
@@ -51,9 +53,11 @@ def download_image(url, file_name):
 class post(Document):
     meta = { "collection" : "post"}
     post_text = fields.StringField()
-    post_img= fields.ImageField()
     choice = fields.StringField()
+    img_url = fields.StringField()
     file_name = fields.StringField()
+    file_loc = fields.StringField()
+    #post_img= fields.ImageField()
     #post_status = fields.StringField()
 
 #database incrementar ~
@@ -63,9 +67,11 @@ def uploaddata(i_new,tweet_new):
     post_pointer = post(post_text=tweet_new)
     post_pointer.choice = "nposted"
     post_pointer.file_name = filennm
-    p_img = open("imagis/" + filennm + ".jpg",'rb')
-    post_pointer.post_img.put(p_img,filename=filennm + ".jpg")
+    post_pointer.file_loc = "imagis/" + filennm + ".jpg"
+    post_pointer.img_url = samvar
     post_pointer.save()
+    #p_img = open("imagis/" + filennm + ".jpg",'rb')
+    #post_pointer.post_img.put(p_img,filename=filennm + ".jpg")
 
 #compares length of both array to avoid out of range errors ~
 def compre():
@@ -92,19 +98,22 @@ def gettweet():
             sarc.append(imag.get_attribute('src'))
             cutc = imag.get_attribute('src')
             cut = cutc[28:43]
-            download_image(cutc,cut + ".jpg ")
+            fl.append(cut)
+            #download_image(cutc,cut + ".jpg ")
             #driver.execute_script('window.scrollTo(0,1000)')
 
     print("data fetching....")
     for article in articles:
         #(alternative)Tweet = article.find_element(By.XPATH,".//div[@data-testid='tweetText']").text
-        sweet = article.find_element_by_xpath(".//div/div/div/div[2]/div[2]/div[2]/div[1]/div")
+        #/div/div/div[2]/div[2]/div[2]/div
+        sweet = article.find_element_by_xpath(".//div/div/div[2]/div[2]/div[2]/div")
         Tweet = sweet.text
         #(alternative)imagee = article.find_element(by=By.XPATH,value="//div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img").get_attribute('src') or article.find_element(by=By.XPATH,value="//div/div/div/div[2]/div[2]/div[2]/div[2]/div/div/div/div/div/a/div/div[2]/div/img").get_attribute('data-src')  #//img[@alt='Image'])
         tweet= (Tweet)   
         tweetid = ''.join(tweet)
         if tweetid not in tweetids:
-            data.append(Tweet)
+            if(i!=0):
+                data.append(Tweet)
             #uploaddata(i,tweet)
             print(sarc)
             i=i+1
@@ -119,15 +128,19 @@ def gettweet():
 
 #main function ~        
 def main():
+    apnd=0
     j=0
     while(j==0):
         #(saved for later) for i in usernames:
         gettweet()
         getcmp=compre()
-        for g in range(0,getcmp):
-            if data[g] not in cmparr:
-                uploaddata(g,data[g])
-                cmparr.add(data[g])
+        for g in range(apnd,getcmp):
+            if fl[g] not in lnkcomparr:
+                if data[g] not in cmparr:
+                    uploaddata(g,data[g])
+                    cmparr.add(data[g])
+                    lnkcomparr.add(fl[g])
+                    apnd=apnd+1
         time.sleep(10)
 
 #main func caller ~
