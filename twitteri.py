@@ -23,7 +23,7 @@ from mongoengine import connect,Document,fields
 driver = webdriver.Chrome()
 usernames = ["marvel_updat3s","Updates4Marvel","DiscussingFilm"]
 driver.get("https://twitter.com/marvel_updat3s")
-connect( db='db-name', username='user', password='pass', host='mongodb+srv://ForeverKnight:Captainjay32@cluster0.au5htbm.mongodb.net/?retryWrites=true&w=majority')
+connect( db='db-name', username='user', password='pass', host='db-link')
 
 #initialized sets and arrays ~
 data = []
@@ -132,7 +132,7 @@ def main():
 
 #main func caller ~
 if __name__ == '__main__':
-    client = pymongo.MongoClient("mongodb+srv://ForeverKnight:Captainjay32@cluster0.au5htbm.mongodb.net/?retryWrites=true&w=majority")
+    client = pymongo.MongoClient("db-link")
     db = client['jay']
     collection = db['post']
     main()
